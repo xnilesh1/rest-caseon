@@ -1,5 +1,5 @@
 import pymysql
-from Database.connection import getconnection
+from connection import getconnection
 
 connection = getconnection()
 
@@ -51,5 +51,3 @@ def add_one_to_column(column_name):
     except Exception as e:
         return False, f"An unexpected error occurred: {str(e)}"
         
-
-

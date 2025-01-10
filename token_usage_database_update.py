@@ -1,6 +1,6 @@
 import pymysql
 from datetime import datetime
-from Database.connection import getconnection
+from connection import getconnection
 
 def update_token_usage(input_tokens: int, output_tokens: int):
     """

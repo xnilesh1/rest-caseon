@@ -4,6 +4,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import BaseModel
 from typing import List, Dict, Tuple
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 class PineconeVectorStore(BaseModel):
@@ -15,7 +16,7 @@ class QueryResult(BaseModel):
     metadata: Dict
     score: float
 
-def pincone_vector_database_query(query: str, index_name: str):
+def pincone_vector_database_query(query: str, namespace: str):
     try:
         """
         Query the Pinecone vector database and return results with full metadata
@@ -29,8 +30,9 @@ def pincone_vector_database_query(query: str, index_name: str):
         """
 
         # Initialize embeddings and Pinecone
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.getenv("GOOGLE_API_KEY"))
-        pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.environ["GOOGLE_API_KEY"])
+        pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+        index_name = os.environ["INDEX_NAME"]
         index = pc.Index(index_name)
         
         # Update trending count
@@ -42,7 +44,8 @@ def pincone_vector_database_query(query: str, index_name: str):
         results = index.query(
             vector=query_embedding,
             top_k=5,
-            include_metadata=True
+            include_metadata=True,
+            namespace=namespace,
         )
         
         # Extract results and metadata

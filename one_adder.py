@@ -1,5 +1,5 @@
 from datetime import datetime
-from Database.connection import getconnection
+from connection import getconnection
 
 # Function to increment a column for today's date
 def increment_column_for_today(column_name: str):

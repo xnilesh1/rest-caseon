@@ -1,7 +1,7 @@
 import pymysql
 from datetime import datetime
 from typing import List, Dict, Tuple
-from Database.connection import getconnection
+from connection import getconnection
 
 connection = getconnection()
 

@@ -1,7 +1,7 @@
-from llm.generative_model import get_completion
-from Database.token_usage_database_update import update_token_usage
-from pinecone_vector_database.query import pincone_vector_database_query  
-from DASHBOARD.one_adder import increment_column_for_today
+from generative_model import get_completion
+from token_usage_database_update import update_token_usage
+from query import pincone_vector_database_query  
+from one_adder import increment_column_for_today
 import os
 # import streamlit as st
 import logging
@@ -13,17 +13,6 @@ logging.basicConfig(
     filename='app.log'
 )
 
-
-
-
-"""
-This module provides functionality to generate responses using a generative AI model.
-Functions:
-  generate_response(context: str, user_input: str) -> dict:
-    Generates a response based on the provided context and user input using a chat session.
-  process_input(user_input: str) -> dict:
-    Processes the user input by retrieving relevant documents and generating a response.
-"""
 
 
 def start_chatting(index_name, user_input):
@@ -61,20 +50,3 @@ def start_chatting(index_name, user_input):
     return response
 
 
-
-
-# with st.form(key='my_form'):
-#     input_text = st.text_input("Enter your query:")
-#     submit_button = st.form_submit_button(label='Submit')
-
-# if submit_button:
-#     if input_text.strip() == "":
-#         st.warning("Please enter a query.")
-#     else:
-#         with st.spinner('Generating response...'):
-#             result = start_chatting(index_id, input_text)
-#         st.markdown(result)
-
-# query = "Summarize the document"
-# result = start_chatting(index_id, query)
-# print(result)
