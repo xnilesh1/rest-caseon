@@ -40,7 +40,7 @@ def start_chatting(index_name, user_input):
     except Exception as e:
         logging.error(f"Error querying Pinecone: {str(e)}")
         raise
-    input_query = (f"""Case: {context}\n\n Question: {user_input}""")
+    input_query = (f"""Case: {context}\n\n Question: {user_input+"in this case"}""")
     response, response_metadata = get_completion(input_query)
 
     
