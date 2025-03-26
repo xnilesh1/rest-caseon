@@ -43,7 +43,7 @@ def pincone_vector_database_query(query: str, namespace: str):
         # Query Pinecone
         results = index.query(
             vector=query_embedding,
-            top_k=5,
+            top_k=30,
             include_metadata=True,
             namespace=namespace,
         )
