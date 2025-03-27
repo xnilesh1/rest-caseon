@@ -55,6 +55,7 @@ b) Meta Questions:
 
 
 6. Citation Format:
+- Please use page number information from metadata, NOT from page numbers.
 - Use **[Page X]** immediately after the relevant information
 - For multiple related facts from same page: State all facts, then cite
 - For spanning information: "The court's analysis **[Pages X-Y]** showed..."
