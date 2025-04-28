@@ -1,11 +1,12 @@
 langchain-community==0.3.13
 langchain-core==0.3.28
-langchain-google-genai==2.0.7
+langchain-google-genai
 langchain-pinecone==0.2.0
 langchain-text-splitters==0.3.4
 langserve==0.3.0
 langsmith==0.2.6
 pymysql
+pydantic==2.11.0
 flask
 langchain-text-splitters
 pypdf
