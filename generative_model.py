@@ -1,4 +1,6 @@
+from langchain_core.caches import BaseCache
 from langchain_google_genai import ChatGoogleGenerativeAI
+ChatGoogleGenerativeAI.model_rebuild()
 import os
 from langsmith import Client, traceable
 from dotenv import load_dotenv
@@ -6,6 +8,7 @@ load_dotenv()
 import streamlit as st
 
 os.environ["LANGSMITH_TRACING"] = "true"
+
 instructions = """"
 You are an authoritative legal research assistant integrated into our case study platform. Your purpose is to help users understand legal cases and proceedings through clear, accurate explanations.
 
@@ -72,22 +75,17 @@ llm = ChatGoogleGenerativeAI(
 )
 
 @traceable(client=custom_client,
-  run_type="llm",
-  name="AI-CASE",
-  project_name="Fiverr"
+    run_type="llm",
+    name="AI-CASE",
+    project_name="Fiverr"
 )
 def get_completion(prompt):
-  try:
-    messages = [
-    (
-        "system",
-        instructions,
-    ),
-    ("human", prompt),
-    ]
-    ai_msg = llm.invoke(messages)
-    return ai_msg.content, ai_msg.usage_metadata
-
-  except Exception as e:
-      print(f"An error occurred in generative_model.py : {str(e)}")
-
+    try:
+        messages = [
+            ("system", instructions),
+            ("human", prompt),
+        ]
+        ai_msg = llm.invoke(messages)
+        return ai_msg.content, ai_msg.usage_metadata
+    except Exception as e:
+        print(f"An error occurred in generative_model.py : {str(e)}")
