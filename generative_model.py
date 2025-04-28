@@ -1,6 +1,8 @@
-from langchain_core.caches import BaseCache
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.caches import BaseCache  # Already present for previous fixesfrom langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.callbacks import Callbacks  # Add this to define Callbacks
+# Rebuild the model after imports
 ChatGoogleGenerativeAI.model_rebuild()
+
 import os
 from langsmith import Client, traceable
 from dotenv import load_dotenv
@@ -66,6 +68,13 @@ b) Meta Questions:
 
 Remember: You represent the case study platform itself. Each response should feel like an integrated part of the legal documentation system, combining authority with accessibility.
 """
+
+custom_client = Client(api_key=os.environ["LANGSMITH_API_KEY"])
+
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    temperature=0.2,
+)
 
 custom_client = Client(api_key=os.environ["LANGSMITH_API_KEY"])
 
