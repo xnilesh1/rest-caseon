@@ -1,6 +1,7 @@
 from langchain_core.caches import BaseCache  # Already present for previous fixesfrom langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.callbacks import Callbacks  # Add this to define Callbacks
 # Rebuild the model after imports
+from langchain_google_genai import ChatGoogleGenerativeAI
 ChatGoogleGenerativeAI.model_rebuild()
 
 import os
