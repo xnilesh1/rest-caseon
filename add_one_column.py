@@ -1,31 +1,28 @@
 import pymysql
-from connection import getconnection
-
-connection = getconnection()
-
+from connection import getconnection, release_connection
 
 def add_one_to_column(column_name):
     """
     Adds a new column to the cat_is_trending table.
     
     Args:
-        connection: PyMySQL database connection object
         column_name: str, name of the column to add
-        data_type: str, SQL data type for the new column (default: "INT")
-    
+        
     Returns:
         tuple: (bool, str) - (Success status, Message)
-        
-    Raises:
-        pymysql.MySQLError: If there's any database error
     """
     cursor = None
+    connection = None
     data_type="INT"
     try:
         # Sanitize column name to prevent SQL injection
         # Only allow alphanumeric characters and underscores
         if not column_name.replace('_', '').isalnum():
             return False, "Column name can only contain letters, numbers, and underscores"
+        
+        connection = getconnection()
+        if not connection:
+            return False, "Failed to connect to database"
             
         cursor = connection.cursor()
         
@@ -50,4 +47,10 @@ def add_one_to_column(column_name):
         
     except Exception as e:
         return False, f"An unexpected error occurred: {str(e)}"
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)
         
