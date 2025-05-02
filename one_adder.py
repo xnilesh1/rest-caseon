@@ -1,5 +1,5 @@
 from datetime import datetime
-from connection import getconnection
+from connection import getconnection, release_connection
 
 # Function to increment a column for today's date
 def increment_column_for_today(column_name: str):
@@ -13,12 +13,14 @@ def increment_column_for_today(column_name: str):
     if not safe_column_name[0].isalpha():
         safe_column_name = 'idx_' + safe_column_name
         
-    connection = getconnection()
-    if connection is None:
-        print("Failed to connect to the database.")
-        return
-
+    connection = None
+    cursor = None
     try:
+        connection = getconnection()
+        if connection is None:
+            print("Failed to connect to the database.")
+            return
+
         # First, check if the column exists
         cursor = connection.cursor()
         check_column_query = """
@@ -79,8 +81,12 @@ def increment_column_for_today(column_name: str):
         
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        connection.rollback()
+        if connection:
+            connection.rollback()
     finally:
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            release_connection(connection)
 
 
