@@ -8,7 +8,6 @@ import os
 from langsmith import Client, traceable
 from dotenv import load_dotenv
 load_dotenv()
-import streamlit as st
 
 os.environ["LANGSMITH_TRACING"] = "true"
 
@@ -99,3 +98,4 @@ def get_completion(prompt):
         return ai_msg.content, ai_msg.usage_metadata
     except Exception as e:
         print(f"An error occurred in generative_model.py : {str(e)}")
+
