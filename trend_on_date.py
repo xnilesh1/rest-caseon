@@ -99,13 +99,4 @@ def print_trending_results(success: bool, message: str, trending_data: List[Dict
             print(f"{item['category']:<20} {item['count']:>10}")
     print()
 
-# Example usage
-def test_trending_analysis():
-    # Test with a valid date
-    target_date = "2024-12-22"  # Replace with your target date
-    success, message, trending_data = get_trending_on_date(connection, target_date)
-    print_trending_results(success, message, trending_data)
-    
 
-# Run the test if needed
-test_trending_analysis()
