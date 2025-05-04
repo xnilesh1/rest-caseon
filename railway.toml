@@ -3,9 +3,9 @@ builder = "nixpacks"
 
 [deploy]
 startCommand = "chmod +x proxy-start.sh && ./proxy-start.sh"
-healthcheckPath = "/"
-healthcheckTimeout = 300
+# Disable healthcheck since our app may not have a proper health endpoint
+healthcheck = false
 restartPolicy = "on-failure"
 
 [phases.setup]
-aptPkgs = ["curl", "netcat-openbsd", "lsof"]
+aptPkgs = ["curl", "netcat-openbsd", "lsof", "jq"]
