@@ -13,3 +13,4 @@ pypdf
 gunicorn
 waitress
 cloud-sql-python-connector
+pytz
