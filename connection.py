@@ -1,7 +1,6 @@
 import os
-from google.cloud.sql.connector import Connector
 import sqlalchemy
-
+import pymysql
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,24 +9,20 @@ load_dotenv()
 _connection_pool = []
 MAX_POOL_SIZE = 5
 
-
 def getconnection():
     """Get a database connection from the pool or create a new one if needed"""
     if _connection_pool:
         return _connection_pool.pop()
     else:
         try:
-            connector = Connector()
-
-            # Configure connection according to the MySQL configuration
+            # Connect to the local Cloud SQL Auth Proxy
             connection = sqlalchemy.create_engine(
-                'mysql+pymysql://',
-                creator=lambda: connector.connect(
-                os.getenv("CONNECTION_NAME"),
-                'pymysql',
-                user=os.getenv("USERNAME"),
-                password=os.getenv("PASSWORD"),
-                db=os.getenv("DATABASE")
+                'mysql+pymysql://{user}:{password}@{host}:{port}/{db}'.format(
+                    user=os.getenv("USERNAME"),
+                    password=os.getenv("PASSWORD"),
+                    host='127.0.0.1',  # Connect to local proxy
+                    port=3306,         # Default MySQL port
+                    db=os.getenv("DATABASE")
                 )
             )
             return connection
@@ -51,5 +46,3 @@ def release_connection(connection):
             connection.dispose()
         except:
             pass
-
-
