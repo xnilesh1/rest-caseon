@@ -4,12 +4,17 @@ from pinecone import Pinecone
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import os
 from langchain_community.document_loaders import PyPDFLoader
-from add_one_column import add_one_to_column
-from index_creator import create_index
 import requests
 import os
 from contextlib import contextmanager
 import tempfile
+from volume_handler import main_function
+from pinecone_index_manager import get_index_namespace_and_project
+import gc
+
+PROJECT_1 = "QA1"
+PROJECT_2 = "QA2"
+
 
 @contextmanager
 def safe_pdf_download(url):
@@ -67,29 +72,42 @@ def process_pdf_safely(loader):
         raise
     finally:
         # Ensure the loader's resources are cleaned up
-        if hasattr(loader, 'pdf_reader'):
-            loader.pdf_reader.stream.close()
+        if hasattr(loader, 'pdf_reader') and hasattr(loader.pdf_reader, 'stream'):
+            try:
+                loader.pdf_reader.stream.close()
+            except:
+                pass
 
 def document_chunking_and_uploading_to_vectorstore(link, name_space):
     """
     Process PDF document with proper resource management and error handling
     """
     vector_store = None
+    pc = None
+    index = None
+    embeddings = None
     
     try:
+        index_name = main_function(name_space)
+        
         # Use context manager for safe PDF download
         with safe_pdf_download(link) as pdf_path:
-            index_name_from_env = os.environ["INDEX_NAME"]
-            create_index(index_name_from_env)
-            add_one_to_column(name_space)
 
             embeddings = GoogleGenerativeAIEmbeddings(
                 model="models/embedding-001",
                 google_api_key=os.environ["GOOGLE_API_KEY"]
             )
-
-            pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
-            index = pc.Index(os.environ["INDEX_NAME"])
+            print(f"Using index: {index_name}")
+            namespace_text, project = get_index_namespace_and_project(index_name)
+            
+            if project == PROJECT_1:
+                pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+            elif project == PROJECT_2:
+                pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_SECOND_PROJECT"])
+            else:
+                raise ValueError(f"Invalid project: {project}")
+                
+            index = pc.Index(index_name)
             
             vector_store = PineconeVectorStore(
                 embedding=embeddings,
@@ -124,6 +142,12 @@ def document_chunking_and_uploading_to_vectorstore(link, name_space):
         raise
 
     finally:
-        # Clean up vector store resources if needed
-        if vector_store and hasattr(vector_store, 'close'):
-            vector_store.close()
+        # Explicitly clear variables to help garbage collection
+        if docs:
+            docs.clear()
+        if all_splits:
+            all_splits.clear()
+            
+        # Force garbage collection
+        gc.collect()
+

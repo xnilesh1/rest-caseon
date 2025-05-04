@@ -8,7 +8,6 @@ import os
 from langsmith import Client, traceable
 from dotenv import load_dotenv
 load_dotenv()
-import streamlit as st
 
 os.environ["LANGSMITH_TRACING"] = "true"
 
@@ -70,12 +69,6 @@ b) Meta Questions:
 Remember: You represent the case study platform itself. Each response should feel like an integrated part of the legal documentation system, combining authority with accessibility.
 """
 
-custom_client = Client(api_key=os.environ["LANGSMITH_API_KEY"])
-
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
-    temperature=0.2,
-)
 
 custom_client = Client(api_key=os.environ["LANGSMITH_API_KEY"])
 
@@ -86,8 +79,8 @@ llm = ChatGoogleGenerativeAI(
 
 @traceable(client=custom_client,
     run_type="llm",
-    name="AI-CASE",
-    project_name="Fiverr"
+    name="CASEON-AI",
+    project_name="CASEON"
 )
 def get_completion(prompt):
     try:

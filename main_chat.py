@@ -1,9 +1,7 @@
 from generative_model import get_completion
-from token_usage_database_update import update_token_usage
 from query import pincone_vector_database_query  
 from one_adder import increment_column_for_today
 import os
-# import streamlit as st
 import logging
 
 # Set up at the start of your application
@@ -46,7 +44,6 @@ def start_chatting(index_name, user_input):
     
     input_token = response_metadata["input_tokens"]  # Input token
     output_token = response_metadata["output_tokens"] # Output token
-    update_token_usage(input_token, output_token)  # Update token usage
     return response
 
 

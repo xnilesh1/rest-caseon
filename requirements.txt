@@ -12,4 +12,4 @@ langchain-text-splitters
 pypdf
 gunicorn
 waitress
-streamlit
+
