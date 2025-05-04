@@ -6,6 +6,8 @@ from main_chat import start_chatting
 from functools import wraps
 import gc
 import time
+import requests
+print(requests.get("https://api.ipify.org").text)
 
 app = Flask(__name__)
 
