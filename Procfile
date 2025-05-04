@@ -1,1 +1,1 @@
-web: bash railway-start.sh
+web: bash proxy-start.sh
