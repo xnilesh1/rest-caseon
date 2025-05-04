@@ -6,14 +6,11 @@ langchain-text-splitters==0.3.4
 langserve==0.3.0
 langsmith==0.2.6
 pymysql
+cloud-sql-python-connector[pymysql]
 pydantic==2.11.0
 flask
 langchain-text-splitters
 pypdf
 gunicorn
 waitress
-cloud-sql-python-connector
 pytz
-sqlalchemy
-jq
-netcat
