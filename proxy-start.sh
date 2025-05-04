@@ -23,16 +23,20 @@ fi
 # Create tmp directory if it doesn't exist
 mkdir -p /tmp
 
-# 1. Write service account credentials to a file
-echo "Writing service account credentials to /tmp/sa.json"
-echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/sa.json
+# 1. Write service account credentials to a file using printf
+echo "Writing service account credentials to /tmp/sa.json using printf"
+printf '%s\n' "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/sa.json
 ls -la /tmp/sa.json
 
 # Make sure the credentials file is valid JSON
-if ! jq . /tmp/sa.json > /dev/null 2>&1; then
-  echo "ERROR: Credentials file is not valid JSON"
-  head -10 /tmp/sa.json
+echo "Validating credentials file /tmp/sa.json..."
+if ! jq . /tmp/sa.json > /dev/null; then
+  echo "ERROR: Credentials file /tmp/sa.json is not valid JSON after writing!"
+  echo "File contents:"
+  cat /tmp/sa.json
   exit 1
+else
+  echo "Credentials file /tmp/sa.json is valid JSON."
 fi
 
 # 2. Download the proxy binary
@@ -63,7 +67,7 @@ sleep 10
 
 # Check if proxy is still running
 if ! ps -p $PROXY_PID > /dev/null; then
-  echo "ERROR: Cloud SQL Auth Proxy died shortly after starting"
+  echo "ERROR: Cloud SQL Auth Proxy PID $PROXY_PID died shortly after starting"
   echo "Proxy logs:"
   cat /tmp/cloud_sql_proxy.log
   exit 1
