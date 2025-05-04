@@ -14,3 +14,7 @@ gunicorn
 waitress
 cloud-sql-python-connector
 pytz
+sqlalchemy
+jq
+netcat
+
