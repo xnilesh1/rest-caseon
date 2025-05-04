@@ -1,2 +1,1 @@
-web: python rag.py
-
+web: bash railway-start.sh
