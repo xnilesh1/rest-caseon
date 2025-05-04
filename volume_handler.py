@@ -4,8 +4,9 @@ from typing import Tuple, Dict
 from pinecone import Pinecone
 
 # Constants for Pinecone limits
-NAMESPACES_PER_INDEX = 25000
-INDEXES_PER_PROJECT = 20
+# NAMESPACES_PER_INDEX = 25000
+NAMESPACES_PER_INDEX = 1
+INDEXES_PER_PROJECT = 2
 TARGET_TOTAL_NAMESPACES = 1000000
 
 # Project constants
