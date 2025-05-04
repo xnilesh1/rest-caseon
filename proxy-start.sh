@@ -2,6 +2,21 @@
 
 set -e  # Exit on any error
 
+# --- Install jq if missing ---
+echo "Checking for jq..."
+if ! command -v jq &> /dev/null; then
+    echo "jq not found. Installing..."
+    apt-get update && apt-get install -y jq --no-install-recommends
+    if ! command -v jq &> /dev/null; then
+        echo "ERROR: Failed to install jq. Exiting."
+        exit 1
+    fi
+    echo "jq installed successfully."
+else
+    echo "jq is already installed."
+fi
+# -----------------------------
+
 # Print environment variables (except credentials)
 echo "==== Starting proxy-start.sh ===="
 echo "CLOUD_SQL_CONNECTION_NAME: $CLOUD_SQL_CONNECTION_NAME"
@@ -32,7 +47,8 @@ ls -la /tmp/sa.json
 echo "Validating credentials file /tmp/sa.json..."
 if ! jq . /tmp/sa.json > /dev/null; then
   echo "ERROR: Credentials file /tmp/sa.json is not valid JSON after writing!"
-  echo "File contents:"
+  echo "This almost always means the GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable in Railway has extra characters (like semicolons). Please double-check and fix it in Railway settings."
+  echo "File contents written:"
   cat /tmp/sa.json
   exit 1
 else
