@@ -10,11 +10,15 @@ curl -o cloud_sql_proxy https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd
 # 3. Start the proxy in background
 ./cloud_sql_proxy \
   -instances="$CLOUD_SQL_CONNECTION_NAME"=tcp:3306 \
+  -credential_file=/tmp/sa.json \
   &
 
 # 4. Wait for proxy to start
-sleep 5
+sleep 10
 
-# 5. Start your main application
-# Replace this with your actual start command
-exec python rag.py
+# 5. Output proxy status
+ps aux | grep cloud_sql_proxy
+
+# 6. Start your main application
+# Replace this with your actual application start command
+exec gunicorn rag:app
