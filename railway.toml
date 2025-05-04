@@ -2,4 +2,10 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "python rag.py"
+startCommand = "chmod +x proxy-start.sh && ./proxy-start.sh"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "on-failure"
+
+[phases.setup]
+aptPkgs = ["curl", "netcat-openbsd", "lsof"]
