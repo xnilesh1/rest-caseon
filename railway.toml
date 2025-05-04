@@ -2,10 +2,4 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "chmod +x proxy-start.sh && ./proxy-start.sh"
-# Disable healthcheck since our app may not have a proper health endpoint
-healthcheck = false
-restartPolicy = "on-failure"
-
-[phases.setup]
-aptPkgs = ["curl", "netcat-openbsd", "lsof", "jq"]
+startCommand = "python rag.py"
