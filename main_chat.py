@@ -1,6 +1,5 @@
 from generative_model import get_completion
 from query import pincone_vector_database_query  
-from one_adder import increment_column_for_today
 import os
 import logging
 
