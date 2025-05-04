@@ -1,1 +1,2 @@
-web: bash proxy-start.sh
+web: chmod +x proxy-start.sh && ./proxy-start.sh
+
