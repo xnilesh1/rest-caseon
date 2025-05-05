@@ -4,13 +4,19 @@ from typing import Tuple, Dict
 from pinecone import Pinecone
 
 # Constants for Pinecone limits
-NAMESPACES_PER_INDEX = 24999
-INDEXES_PER_PROJECT = 20
-TARGET_TOTAL_NAMESPACES = 1000000
+# NAMESPACES_PER_INDEX = 25000
+# INDEXES_PER_PROJECT = 20
+
+NAMESPACES_PER_INDEX = 1
+INDEXES_PER_PROJECT = 2
+
+TARGET_TOTAL_NAMESPACES = 2000000
 
 # Project constants
 PROJECT_1 = "QA1"
 PROJECT_2 = "QA2"
+PROJECT_3 = "QA3"
+PROJECT_4 = "QA4"
 
 def get_project_status(api_key: str) -> Tuple[str, int]:
     """Get current project status including available index and total namespaces."""
@@ -40,25 +46,22 @@ def get_project_status(api_key: str) -> Tuple[str, int]:
 def main_function(namespace_count: str) -> str:
     """
     Main handler for managing Pinecone indexes and namespaces across projects.
-    Returns: index_name
+    Returns: index_name or None if all projects are full.
     """
-    # Try first project
-    api_key = os.environ["PINECONE_API_KEY"]
-    index_name, current_ns_count = get_project_status(api_key)
-    
-    if index_name is not None:
-        # If first project has capacity, use it
-        insert_case(namespace=namespace_count, index_name=index_name, project=PROJECT_1)
-        return index_name
-    
-    # If first project is full, try second project
-    api_key = os.environ["PINECONE_API_KEY_SECOND_PROJECT"]
-    index_name, current_ns_count = get_project_status(api_key)
-    
-    if index_name is None:
-        raise Exception("Both projects are at capacity. Cannot create more indexes.")
-    
-    # Insert into second project
-    insert_case(namespace=namespace_count, index_name=index_name, project=PROJECT_2)
-    return index_name
-
+    # List of (env var for API key, project name)
+    projects = [
+        ("PINECONE_API_KEY_FIRST_PROJECT", PROJECT_1),
+        ("PINECONE_API_KEY_SECOND_PROJECT", PROJECT_2),
+        ("PINECONE_API_KEY_THIRD_PROJECT", PROJECT_3),
+        ("PINECONE_API_KEY_FOURTH_PROJECT", PROJECT_4),
+    ]
+    for api_key_env, project_name in projects:
+        api_key = os.environ.get(api_key_env)
+        if not api_key:
+            continue  # skip if API key is not set
+        index_name, current_ns_count = get_project_status(api_key)
+        if index_name is not None:
+            insert_case(namespace=namespace_count, index_name=index_name, project=project_name)
+            return index_name
+    # If all projects are full, return None
+    return None
