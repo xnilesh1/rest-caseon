@@ -14,3 +14,4 @@ pypdf
 gunicorn
 waitress
 pytz
+psutil
