@@ -66,7 +66,7 @@ def pincone_vector_database_query(query: str, namespace: str):
             pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FOURTH_PROJECT"])
             index = pc.Index(index_name)
         else:
-            raise ValueError(f"Invalid project: {project}")
+            raise ValueError("All the projects are full")
         
         # Get query embedding
         query_embedding = embeddings.embed_query(query)
