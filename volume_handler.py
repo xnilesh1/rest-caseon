@@ -3,6 +3,7 @@ import os
 from typing import Tuple, Dict
 from pinecone import Pinecone
 
+
 # Constants for Pinecone limits
 # NAMESPACES_PER_INDEX = 25000
 # INDEXES_PER_PROJECT = 20
@@ -11,6 +12,7 @@ NAMESPACES_PER_INDEX = 1
 INDEXES_PER_PROJECT = 2
 
 TARGET_TOTAL_NAMESPACES = 2000000
+
 
 # Project constants
 PROJECT_1 = "QA1"
@@ -65,3 +67,4 @@ def main_function(namespace_count: str) -> str:
             return index_name
     # If all projects are full, return None
     return None
+
