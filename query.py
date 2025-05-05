@@ -1,4 +1,3 @@
-import logging
 import os
 from pinecone import Pinecone
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -7,7 +6,6 @@ from typing import List, Dict, Tuple
 from dotenv import load_dotenv
 from pinecone_index_manager import get_index_project_by_namespace
 import gc
-from pdf_daily_tracker import track_pdf_daily_usage
 
 load_dotenv()
 class PineconeVectorStore(BaseModel):
@@ -22,14 +20,14 @@ class QueryResult(BaseModel):
 
 PROJECT_1 = "QA1"
 PROJECT_2 = "QA2"
+PROJECT_3 = "QA3"
+PROJECT_4 = "QA4"
 
 
 def pincone_vector_database_query(query: str, namespace: str):
     pc = None
     index = None
     try:
-        track_pdf_daily_usage(namespace)
-        logging.info(f"Tracked Today's usage of {namespace}")
         """
         Query the Pinecone vector database and return results with full metadata
         
@@ -52,10 +50,16 @@ def pincone_vector_database_query(query: str, namespace: str):
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.environ["GOOGLE_API_KEY"])
         print(f"Using project: {project}")
         if project == PROJECT_1:
-            pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+            pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FIRST_PROJECT"])
             index = pc.Index(index_name)
         elif project == PROJECT_2:
             pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_SECOND_PROJECT"])
+            index = pc.Index(index_name)
+        elif project == PROJECT_3:
+            pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_THIRD_PROJECT"])
+            index = pc.Index(index_name)
+        elif project == PROJECT_4:
+            pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FOURTH_PROJECT"])
             index = pc.Index(index_name)
         else:
             raise ValueError(f"Invalid project: {project}")
