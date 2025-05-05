@@ -6,8 +6,8 @@ from main_chat import start_chatting
 from functools import wraps
 import gc
 import time
-import requests
-print(requests.get("https://api.ipify.org").text)
+import psutil
+import sys
 
 app = Flask(__name__)
 
@@ -15,19 +15,17 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Load valid API keys from the API_KEYS environment variable
-# Expected format: a comma-separated string, e.g., "key1,key2,key3"
-api_keys_str = os.environ.get("API_KEYS", "")
-VALID_API_KEYS = set(filter(None, api_keys_str.split(",")))
-logger.info(f"Loaded {len(VALID_API_KEYS)} API keys from environment.")
-
+# External imports
 import os
 import logging
 
-logger = logging.getLogger(__name__)
+# Consolidated API key loading
 api_keys_str = os.environ.get("API_KEYS", "")
-VALID_API_KEYS = set(key.strip() for key in filter(None, api_keys_str.split(",")))
-logger.info(f"Loaded API keys: {VALID_API_KEYS}")
+VALID_API_KEYS = set(k.strip() for k in api_keys_str.split(",") if k.strip())
+logger.info(f"Loaded {len(VALID_API_KEYS)} API keys from environment: {VALID_API_KEYS}")
+
+# Memory threshold (MB) after which we restart
+MEMORY_LIMIT_MB = int(os.getenv("MEMORY_LIMIT_MB", 500))
 
 # Track last memory cleanup time
 last_gc_time = time.time()
@@ -55,6 +53,11 @@ def before_request():
         logger.info("Performing scheduled garbage collection")
         gc.collect()
         last_gc_time = current_time
+    # Monitor RSS memory; exit if above threshold to force a fresh worker
+    mem_mb = psutil.Process(os.getpid()).memory_info().rss / (1024**2)
+    if mem_mb > MEMORY_LIMIT_MB:
+        logger.warning(f"Memory usage {mem_mb:.2f}MB exceeded {MEMORY_LIMIT_MB}MB, exiting to recycle worker")
+        sys.exit(1)
 
 # Error Handlers
 @app.errorhandler(404)
