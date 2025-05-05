@@ -136,7 +136,7 @@ def document_chunking_and_uploading_to_vectorstore(link, name_space):
             elif project == PROJECT_4:
                 pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FOURTH_PROJECT"])
             else:
-                raise ValueError(f"All indexes are full: {project}")
+                raise ValueError(f"Invalid project: {project}")
                 
             index = pc.Index(index_name)
             
