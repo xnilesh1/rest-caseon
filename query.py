@@ -1,4 +1,3 @@
-import logging
 import os
 from pinecone import Pinecone
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -7,7 +6,6 @@ from typing import List, Dict, Tuple
 from dotenv import load_dotenv
 from pinecone_index_manager import get_index_project_by_namespace
 import gc
-from pdf_daily_tracker import track_pdf_daily_usage
 
 load_dotenv()
 class PineconeVectorStore(BaseModel):
@@ -30,8 +28,6 @@ def pincone_vector_database_query(query: str, namespace: str):
     pc = None
     index = None
     try:
-        track_pdf_daily_usage(namespace)
-        logging.info(f"Tracked Today's usage of {namespace}")
         """
         Query the Pinecone vector database and return results with full metadata
         
@@ -44,15 +40,12 @@ def pincone_vector_database_query(query: str, namespace: str):
         """
 
         # Initialize embeddings and Pinecone
-        print(f"Getting index and project for namespace: {namespace}")
         index_name, project = get_index_project_by_namespace(namespace)
-        print(f"Retrieved index_name: {index_name}, project: {project}")
         
         if not index_name or not project:
             raise ValueError(f"No index or project found for namespace: {namespace}")
         
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.environ["GOOGLE_API_KEY"])
-        print(f"Using project: {project}")
         if project == PROJECT_1:
             pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FIRST_PROJECT"])
             index = pc.Index(index_name)
@@ -66,7 +59,7 @@ def pincone_vector_database_query(query: str, namespace: str):
             pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FOURTH_PROJECT"])
             index = pc.Index(index_name)
         else:
-            raise ValueError("All the projects are full")
+            raise ValueError(f"Invalid project: {project}")
         
         # Get query embedding
         query_embedding = embeddings.embed_query(query)
@@ -97,10 +90,7 @@ def pincone_vector_database_query(query: str, namespace: str):
         return texts, metadata_list
         
     except Exception as e:
-        print(f"An error occurred in pinecone vector database query: {str(e)}")
         import traceback
-        print("Full error details:")
-        print(traceback.format_exc())
         return None, None
     
     finally:
