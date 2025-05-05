@@ -1,12 +1,11 @@
 import os
 import pymysql
 from dotenv import load_dotenv
-from typing import Tuple, Optional
+from typing import List, Dict, Tuple, Optional
 import uuid
 from pinecone import Pinecone
 from pinecone import ServerlessSpec
 from connection import getconnection, release_connection
-import sqlalchemy
 
 
 
@@ -21,15 +20,17 @@ def insert_case(namespace: str, index_name: str, project: str):
             print("Failed to connect to database")
             return False
             
-        # Using SQLAlchemy connection
-        sql = sqlalchemy.text("INSERT INTO volume_handling_table (namespace, index_name, project) VALUES (:namespace, :index_name, :project)")
-        with conn.connect() as connection:
-            connection.execute(sql, {"namespace": namespace, "index_name": index_name, "project": project})
-            connection.commit()
+        with conn.cursor() as cursor:
+            sql = "INSERT INTO volume_handling_table (namespace, index_name, project) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (namespace, index_name, project))
+        conn.commit()
         return True
-    except Exception as e:
-        if isinstance(e, pymysql.err.IntegrityError) or "Duplicate entry" in str(e):
+    except pymysql.err.IntegrityError as e:
+        if "Duplicate entry" in str(e) and "PRIMARY" in str(e):
             print(f"Duplicate namespace detected: {namespace}")
+        print(e)
+        return False
+    except Exception as e:
         print(e)
         return False
     finally:
@@ -41,7 +42,7 @@ def insert_case(namespace: str, index_name: str, project: str):
 
 
 
-def create_unique_pinecone_index(dimension: int, metric: str = "cosine", pod_type: Optional[str] = None, api_key: str = os.environ["PINECONE_API_KEY"]) -> str:
+def create_unique_pinecone_index(dimension: int, metric: str = "cosine", pod_type: Optional[str] = None, api_key: str = os.environ["PINECONE_API_KEY_FIRST_PROJECT"]) -> str:
     """
     Create a new Pinecone index with a unique auto-generated name to avoid naming collisions.
     """
@@ -90,7 +91,6 @@ def count_namespaces_in_index(index_name: str, api_key: str) -> int:
 
 
 
-
 def get_index_project_by_namespace(namespace: str) -> Tuple[str, str]:
     """
     Get the index_name and project values for a given namespace from the database.
@@ -109,14 +109,14 @@ def get_index_project_by_namespace(namespace: str) -> Tuple[str, str]:
             print("Failed to connect to database")
             return None, None
             
-        # Using SQLAlchemy connection
-        sql = sqlalchemy.text("SELECT index_name, project FROM volume_handling_table WHERE namespace = :namespace")
-        with conn.connect() as connection:
-            result = connection.execute(sql, {"namespace": namespace}).fetchone()
+        with conn.cursor() as cursor:
+            sql = "SELECT index_name, project FROM volume_handling_table WHERE namespace = %s"
+            cursor.execute(sql, (namespace,))
+            result = cursor.fetchone()
             
             if result:
-                index_name = result[0]  # Access by index instead of dict
-                project = result[1]
+                index_name = result['index_name']
+                project = result['project']
                 return index_name, project
             return None, None
             
@@ -147,14 +147,14 @@ def get_index_namespace_and_project(index_name: str) -> Tuple[str, str]:
             print("Failed to connect to database")
             return None, None
             
-        # Using SQLAlchemy connection
-        sql = sqlalchemy.text("SELECT namespace, project FROM volume_handling_table WHERE index_name = :index_name")
-        with conn.connect() as connection:
-            result = connection.execute(sql, {"index_name": index_name}).fetchone()
+        with conn.cursor() as cursor:
+            sql = "SELECT namespace, project FROM volume_handling_table WHERE index_name = %s"
+            cursor.execute(sql, (index_name,))
+            result = cursor.fetchone()
             
             if result:
-                namespace = result[0]  # Access by index instead of dict
-                project = result[1]
+                namespace = result['namespace']
+                project = result['project']
                 return namespace, project
             return None, None
             
