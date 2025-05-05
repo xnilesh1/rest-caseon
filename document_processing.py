@@ -16,6 +16,9 @@ import time
 
 PROJECT_1 = "QA1"
 PROJECT_2 = "QA2"
+PROJECT_3 = "QA3"
+PROJECT_4 = "QA4"
+
 
 # Configure module-level logger
 logger = logging.getLogger(__name__)
@@ -125,9 +128,13 @@ def document_chunking_and_uploading_to_vectorstore(link, name_space):
             namespace_text, project = get_index_namespace_and_project(index_name)
             
             if project == PROJECT_1:
-                pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+                pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FIRST_PROJECT"])
             elif project == PROJECT_2:
                 pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_SECOND_PROJECT"])
+            elif project == PROJECT_3:
+                pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_THIRD_PROJECT"])
+            elif project == PROJECT_4:
+                pc = Pinecone(api_key=os.environ["PINECONE_API_KEY_FOURTH_PROJECT"])
             else:
                 raise ValueError(f"Invalid project: {project}")
                 
