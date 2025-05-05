@@ -66,8 +66,10 @@ def check_environment_requirements() -> bool:
         bool: True if all required variables are present, False otherwise
     """
     required_vars = [
-        "PINECONE_API_KEY",
+        "PINECONE_API_KEY_FIRST_PROJECT",
         "PINECONE_API_KEY_SECOND_PROJECT",
+        "PINECONE_API_KEY_THIRD_PROJECT",
+        "PINECONE_API_KEY_FOURTH_PROJECT",
         # Add other required env vars
     ]
     
