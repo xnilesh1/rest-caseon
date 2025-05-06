@@ -13,7 +13,7 @@ from pinecone_index_manager import get_index_namespace_and_project
 import gc
 import logging
 import time
-
+from pdf_daily_tracker import track_pdf_daily_usage
 PROJECT_1 = "QA1"
 PROJECT_2 = "QA2"
 PROJECT_3 = "QA3"
@@ -156,6 +156,7 @@ def document_chunking_and_uploading_to_vectorstore(link, name_space):
                 chunk_overlap=CHUNK_OVERLAP,
                 add_start_index=True,
             )
+            track_pdf_daily_usage(name_space)
 
             # Batch-split and upsert documents for memory efficiency
             batch_size = int(os.getenv("PINECONE_BATCH_SIZE", 100))
