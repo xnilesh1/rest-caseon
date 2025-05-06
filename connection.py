@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Create a connection pool
 _connection_pool = []
 MAX_POOL_SIZE = 5
 
