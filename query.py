@@ -6,6 +6,8 @@ from typing import List, Dict, Tuple
 from dotenv import load_dotenv
 from pinecone_index_manager import get_index_project_by_namespace
 import gc
+from pdf_daily_tracker import track_pdf_daily_usage
+
 
 load_dotenv()
 class PineconeVectorStore(BaseModel):
@@ -71,6 +73,8 @@ def pincone_vector_database_query(query: str, namespace: str):
             include_metadata=True,
             namespace=namespace,
         )
+        track_pdf_daily_usage(namespace)
+
         
         # Extract results and metadata
         query_results = []
